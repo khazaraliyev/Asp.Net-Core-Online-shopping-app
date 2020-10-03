@@ -1,0 +1,66 @@
+﻿
+
+<div class="navbar bg-dark navbar-dark navbar-expand-sm">
+    <div class="container">
+        <a asp-controller="Home" asp-action="Index" class="navbar-brand">Shop app</a>
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a asp-controller="Shop" asp-action="List" class="nav-link">Products</a>
+            </li>
+
+            @if (User.Identity.IsAuthenticated)
+            {
+                <li class="nav-item">
+                    <a @*asp-controller="Product" asp-action="Create"*@ class="nav-link">Create</a>
+                </li>
+                <li class="nav-item">
+                    <a @*asp-controller="Product" asp-action="Create"*@ class="nav-link">Card</a>
+                </li>
+                <li class="nav-item">
+                    <a @*asp-controller="Product" asp-action="Create"*@ class="nav-link">Orders</a>
+                </li>
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <li class="nav-item">
+                        <a asp-controller="Admin" asp-action="ProductList" class="nav-link">Admin Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="Admin" asp-action="CategoryList" class="nav-link">Admin Categories</a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="AdminRole" asp-action="ListRole" class="nav-link">Roles</a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="AdminUsers" asp-action="ListUsers" class="nav-link">Users</a>
+                    </li>
+                    }
+                }
+        </ul>
+
+        <ul class="navbar-nav ml-auto">
+
+            @if (User.Identity.IsAuthenticated)
+            {
+
+                <li class="nav-item">
+                    <a asp-controller="Account" asp-action="manage" class="nav-link">@User.Identity.Name</a>
+                </li>
+                <li class="nav-item">
+                    <a asp-controller="Account" asp-action="Logout" class="nav-link">Logout</a>
+                </li>
+            }
+            else
+            {
+                <li class="nav-item">
+                    <a asp-controller="Account" asp-action="Login" class="nav-link">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a asp-controller="Account" asp-action="Register" class="nav-link">Register</a>
+                </li>
+            }
+
+        </ul>
+
+    </div>
+</div>
