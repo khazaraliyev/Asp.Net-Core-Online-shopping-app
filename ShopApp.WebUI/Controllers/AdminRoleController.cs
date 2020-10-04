@@ -10,7 +10,7 @@ using ShopApp.WebUI.ViewModels;
 
 namespace ShopApp.WebUI.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "admin")]
     public class AdminRoleController : Controller
     {
         private readonly RoleManager<IdentityRole> roleManager;
@@ -35,9 +35,9 @@ namespace ShopApp.WebUI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> EditRole(string id)
+        public async Task<IActionResult> EditRole(string roleid)
         {
-            var role = await roleManager.FindByIdAsync(id);
+            var role = await roleManager.FindByIdAsync(roleid);
             var members = new List<ApplicationUser>();
             var nonmembers = new List<ApplicationUser>();
 

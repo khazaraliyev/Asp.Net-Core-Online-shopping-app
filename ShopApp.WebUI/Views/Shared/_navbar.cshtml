@@ -11,16 +11,13 @@
             @if (User.Identity.IsAuthenticated)
             {
                 <li class="nav-item">
-                    <a @*asp-controller="Product" asp-action="Create"*@ class="nav-link">Create</a>
+                    <a asp-controller="Card" asp-action="Index" class="nav-link">Card</a>
                 </li>
                 <li class="nav-item">
-                    <a @*asp-controller="Product" asp-action="Create"*@ class="nav-link">Card</a>
-                </li>
-                <li class="nav-item">
-                    <a @*asp-controller="Product" asp-action="Create"*@ class="nav-link">Orders</a>
+                    <a asp-controller="Orders" asp-action="Index" class="nav-link">Orders</a>
                 </li>
 
-                @if (User.IsInRole("Admin"))
+                @if (User.IsInRole("admin"))
                 {
                     <li class="nav-item">
                         <a asp-controller="Admin" asp-action="ProductList" class="nav-link">Admin Products</a>
@@ -34,8 +31,8 @@
                     <li class="nav-item">
                         <a asp-controller="AdminUsers" asp-action="ListUsers" class="nav-link">Users</a>
                     </li>
-                    }
                 }
+            }
         </ul>
 
         <ul class="navbar-nav ml-auto">

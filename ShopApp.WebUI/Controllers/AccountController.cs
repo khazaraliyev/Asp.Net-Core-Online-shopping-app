@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ShopApp.Business.Abstract;
 using ShopApp.WebUI.EmailService;
 using ShopApp.WebUI.Identity;
 using ShopApp.WebUI.ViewModels;
@@ -18,12 +19,14 @@ namespace ShopApp.WebUI.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly IEmailSender emailSender;
+        private readonly ICardService cardService;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender, ICardService cardService)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.emailSender = emailSender;
+            this.cardService = cardService;
         }
 
         [AllowAnonymous]
@@ -74,12 +77,14 @@ namespace ShopApp.WebUI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Register()
         {
             return View();
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (!ModelState.IsValid)
@@ -115,6 +120,7 @@ namespace ShopApp.WebUI.Controllers
             return Redirect("~/");
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(string userId,string confirmationToken)
         {
             if (userId==null || confirmationToken == null)
@@ -128,6 +134,7 @@ namespace ShopApp.WebUI.Controllers
                 var result = await userManager.ConfirmEmailAsync(user, confirmationToken);
                 if (result.Succeeded)
                 {
+                    cardService.InitializeCard(user.Id);
                     TempData["message"] = "Email successfully confirmed";
                     return RedirectToAction("Index", "Home");
                 }
@@ -171,6 +178,7 @@ namespace ShopApp.WebUI.Controllers
             return View();
         }
 
+        [AllowAnonymous]
         public IActionResult ResetPassword(string userId, string confirmationToken)
         {
             if (userId==null || confirmationToken==null)
@@ -182,6 +190,7 @@ namespace ShopApp.WebUI.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
             if (!ModelState.IsValid)

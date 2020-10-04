@@ -1,0 +1,102 @@
+﻿@model CardViewModel
+
+<h1 class="h3">Shopiing card</h1>
+<hr />
+
+
+@if (Model.CardItems.Count() == 0)
+{
+    <div class="row">
+        <div class="row-12">
+            <div class="alert alert-warning">
+                No products in your basket
+            </div>
+        </div>
+    </div>
+}
+
+else
+{
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="text-left">
+                <h4>Card items</h4>
+            </div>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Product name</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.CardItems)
+                    {
+                        <tr>
+                            <td>
+                                <img src="~/images/@item.Image" width="80" />
+                            </td>
+                            <td>
+                                @item.Name
+                            </td>
+                            <td>
+                                @item.Price
+                            </td>
+                            <td>
+                                @item.Quantity
+                            </td>
+                            <td>
+                                @(item.Quantity*item.Price)
+                            </td>
+                            <td>
+                                <form asp-controller="Card" asp-action="DeleteFromRole" method="post">
+                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fa fa-times fa-fw"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-4">
+            <div class="text-left">
+                <h4>Card cummary</h4>
+            </div>
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th>
+                            Card total
+                        </th>
+                        <td>@Model.TotalPrice().ToString()</td>
+                    </tr>
+                    <tr>
+                        <th>Shipping</th>
+                        <th>Free</th>
+                    </tr>
+                    <tr>
+                        <th>Order total</th>
+                        <th>@Model.TotalPrice().ToString()</th>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="text-center">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+                    <i class="fa fa-arrow-circle-left fa-fw">Continue shopping</i>
+                </a>
+                <a asp-controller="Card" asp-action="Checkout" class="btn btn-primary">
+                    <i class="fa fa-arrow-circle-right fa-fw">Continue shopping</i>
+                </a>
+            </div>
+        </div>
+    </div>
+}
+

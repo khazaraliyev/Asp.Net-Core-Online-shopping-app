@@ -38,7 +38,7 @@ namespace ShopApp.WebUI
             //});
             //optionsBuilder.UseSqlServer("server=localhost;database=ShopDB;Trusted_Connection=True");
 
-            services.AddDbContext<ApplicationContext>(options => options.UseSqlServer("server=localhost;database=ShopDB;Trusted_Connection=True"));
+            services.AddDbContext<ApplicationContext>(options => options.UseSqlServer("server=localhost;database=ShopDB;Trusted_Connection=True;MultipleActiveResultSets=true"));
             services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationContext>()
                 .AddDefaultTokenProviders();
             services.Configure<IdentityOptions>(options =>
@@ -67,10 +67,14 @@ namespace ShopApp.WebUI
                 };
             });
             services.AddScoped<ICategoryService, CategoryManager>();
+            services.AddScoped<IProductService, ProductManager>();
+            services.AddScoped<ICardService, CardManager>();
+            services.AddScoped<IOrderService, OrderManager>();
+
+            services.AddScoped<IOrderRepository, SQLOrderRepository>();
             services.AddScoped<IProductRepository, SQLProductRepository>();
             services.AddScoped<ICategoryRepository, SQLCategoryRepository>();
-            services.AddScoped<IProductService, ProductManager>();
-            //services.AddSingleton<IEmailSender, SmtpEmailSender>();
+            services.AddScoped<ICardRepository, SQLCardRepository>();
 
             services.AddScoped<IEmailSender, SmtpEmailSender>(email =>
                 new SmtpEmailSender(

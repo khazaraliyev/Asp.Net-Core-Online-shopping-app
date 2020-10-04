@@ -12,10 +12,14 @@ namespace ShopApp.DataAccess.Concrete.SQL
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("server=localhost;database=ShopDB;Trusted_Connection=True");
+            optionsBuilder.UseSqlServer("server=localhost;database=ShopDB;Trusted_Connection=True;MultipleActiveResultSets=true");
         }
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Card> Card { get; set; }
+        public DbSet<CardItem> CardItems { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

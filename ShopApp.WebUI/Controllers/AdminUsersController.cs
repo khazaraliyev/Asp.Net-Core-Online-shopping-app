@@ -11,7 +11,7 @@ using ShopApp.WebUI.ViewModels;
 
 namespace ShopApp.WebUI.Controllers
 {
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles ="admin")]
     public class AdminUsersController : Controller
     {
         private readonly UserManager<ApplicationUser> userManager;
