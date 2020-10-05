@@ -1,33 +1,22 @@
 ﻿@model CardViewModel
 
-<h1 class="h3">Shopiing card</h1>
+<h1 class="h3">Shopping card</h1>
 <hr />
 
 
-@if (Model.CardItems.Count() == 0)
-{
-    <div class="row">
-        <div class="row-12">
-            <div class="alert alert-warning">
-                No products in your basket
-            </div>
+<div class="row mt-5">
+    <div class="col-md-8">
+        <div class="text-left">
+            <h4>Cart Items</h4>
         </div>
-    </div>
-}
 
-else
-{
-
-    <div class="row">
-        <div class="col-md-8">
-            <div class="text-left">
-                <h4>Card items</h4>
-            </div>
+        @if (Model.CardItems.Count > 0)
+        {
             <table class="table table-hover">
                 <thead>
                     <tr>
                         <th></th>
-                        <th>Product name</th>
+                        <th>Product Name</th>
                         <th>Price</th>
                         <th>Quantity</th>
                         <th>Total</th>
@@ -41,62 +30,64 @@ else
                             <td>
                                 <img src="~/images/@item.Image" width="80" />
                             </td>
+                            <td>@item.Name</td>
+                            <td>@item.Price.ToString("c")</td>
+                            <td>@item.Quantity</td>
+                            <td>@((item.Quantity * item.Price).ToString())</td>
                             <td>
-                                @item.Name
-                            </td>
-                            <td>
-                                @item.Price
-                            </td>
-                            <td>
-                                @item.Quantity
-                            </td>
-                            <td>
-                                @(item.Quantity*item.Price)
-                            </td>
-                            <td>
-                                <form asp-controller="Card" asp-action="DeleteFromRole" method="post">
+                                <form asp-controller="Cart" asp-action="DeleteFromCard" method="post">
                                     <input type="hidden" name="productId" value="@item.ProductId" />
                                     <button type="submit" class="btn btn-danger btn-sm">
                                         <i class="fa fa-times fa-fw"></i>
                                     </button>
                                 </form>
+
                             </td>
                         </tr>
                     }
                 </tbody>
+
             </table>
-        </div>
-        <div class="col-md-4">
+        }
+        else
+        {
+            <div class="alert alert-warning">
+                No Product in Cart!
+            </div>
+        }
+    </div>
+    <div class="col-md-4">
+
+        @if (Model.CardItems.Count > 0)
+        {
             <div class="text-left">
-                <h4>Card cummary</h4>
+                <h4>Cart Summary</h4>
             </div>
             <table class="table">
                 <tbody>
                     <tr>
-                        <th>
-                            Card total
-                        </th>
-                        <td>@Model.TotalPrice().ToString()</td>
+                        <th>Cart Total</th>
+                        <td>@Model.TotalPrice() $</td>
                     </tr>
                     <tr>
                         <th>Shipping</th>
-                        <th>Free</th>
+                        <td>Free</td>
                     </tr>
                     <tr>
-                        <th>Order total</th>
-                        <th>@Model.TotalPrice().ToString()</th>
+                        <th>Order Total</th>
+                        <td>@Model.TotalPrice() $</td>
                     </tr>
                 </tbody>
             </table>
             <div class="text-center">
                 <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
-                    <i class="fa fa-arrow-circle-left fa-fw">Continue shopping</i>
+                    <i class="fa fa-arrow-circle-left fa-fw"></i> Continue Shopping
                 </a>
                 <a asp-controller="Card" asp-action="Checkout" class="btn btn-primary">
-                    <i class="fa fa-arrow-circle-right fa-fw">Continue shopping</i>
+                    Checkout <i class="fa fa-arrow-circle-right fa-fw"></i>
                 </a>
             </div>
-        </div>
-    </div>
-}
 
+        }
+    </div>
+</div>

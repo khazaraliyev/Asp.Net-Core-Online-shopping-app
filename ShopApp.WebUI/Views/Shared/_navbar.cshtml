@@ -20,6 +20,9 @@
                 @if (User.IsInRole("admin"))
                 {
                     <li class="nav-item">
+                        <a asp-controller="Admin" asp-action="CreateProduct" class="nav-link">Create Product</a>
+                    </li>
+                    <li class="nav-item">
                         <a asp-controller="Admin" asp-action="ProductList" class="nav-link">Admin Products</a>
                     </li>
                     <li class="nav-item">
@@ -41,7 +44,7 @@
             {
 
                 <li class="nav-item">
-                    <a asp-controller="Account" asp-action="manage" class="nav-link">@User.Identity.Name</a>
+                    <a asp-controller="Home" asp-action="Index" class="nav-link">@User.Identity.Name</a>
                 </li>
                 <li class="nav-item">
                     <a asp-controller="Account" asp-action="Logout" class="nav-link">Logout</a>

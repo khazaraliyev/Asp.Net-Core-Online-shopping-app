@@ -54,15 +54,28 @@ namespace ShopApp.WebUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateProduct(ProductViewModel productViewModel)
+        public async Task<IActionResult> CreateProduct(ProductViewModel productViewModel,IFormFile file)
         {
             var entity = new Product()
             {
                 Name = productViewModel.Name,
                 Price = productViewModel.Price,
                 Description = productViewModel.Description,
-                ImageUrl = productViewModel.ImageUrl
             };
+
+            if (file != null)
+            {
+                entity.ImageUrl = productViewModel.ImageUrl;
+                var extension = Path.GetExtension(file.FileName);
+                var fileName = string.Format($"{Guid.NewGuid()}{extension}");
+                entity.ImageUrl = fileName;
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images", fileName);
+
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+            }
             productService.Create(entity);
             TempData["message"] = $"Product added:{entity.Name}";
             return RedirectToAction("ProductList");
@@ -110,6 +123,39 @@ namespace ShopApp.WebUI.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> EditProduct(ProductViewModel productViewModel, int[] categoryId, IFormFile file)
+        {
+            var product = productService.GetById(productViewModel.ProductId);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            product.Name = productViewModel.Name;
+            product.Description = productViewModel.Description;
+            product.Price = productViewModel.Price;
+            product.IsHome = productViewModel.IsHome;
+            product.IsApproved = productViewModel.IsApproved;
+
+            if (file != null)
+            {
+                product.ImageUrl = productViewModel.ImageUrl;
+                var extension = Path.GetExtension(file.FileName);
+                var fileName = string.Format($"{Guid.NewGuid()}{extension}");
+                product.ImageUrl = fileName;
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images", fileName);
+
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+            }
+            productService.Update(product, categoryId);
+            TempData["message"] = $"Product updated:{product.Name}";
+            return RedirectToAction("ProductList");
+        }
+
         [HttpGet]
         public IActionResult EditCategory(int? id)
         {
@@ -132,38 +178,7 @@ namespace ShopApp.WebUI.Controllers
             return View(model);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> EditProduct(ProductViewModel productViewModel, int[] categoryId, IFormFile file)
-        {
-            var product = productService.GetById(productViewModel.ProductId);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            product.Name = productViewModel.Name;
-            product.Description = productViewModel.Description;
-            product.Price = productViewModel.Price;
-            product.IsHome = productViewModel.IsHome;
-            product.IsApproved = productViewModel.IsApproved;
-
-            if (file!=null)
-            {
-                product.ImageUrl = productViewModel.ImageUrl;
-                var extension = Path.GetExtension(file.FileName);
-                var fileName = string.Format($"{Guid.NewGuid()}{extension}");
-                product.ImageUrl = fileName;
-                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images",fileName);
-
-                using (var stream=new FileStream(path,FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
-            }
-            productService.Update(product,categoryId);
-            TempData["message"] = $"Product updated:{product.Name}";
-            return RedirectToAction("ProductList");
-        }
+   
 
 
         [HttpPost]

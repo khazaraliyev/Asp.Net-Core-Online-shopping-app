@@ -45,7 +45,7 @@
                             <td>@item.EmailConfirmed</td>
                             <td>
                                 <a asp-controller="AdminUsers" asp-action="EditUser" asp-route-id="@item.Id" class="btn btn-primary btn-sm mr-2">Edit</a>
-                                <form asp-action="DeleteUser" asp-controller="AdminRole" asp-route-id="@item.Id" method="post" style="display:inline">
+                                <form asp-action="DeleteUser" asp-controller="AdminUsers" asp-route-id="@item.Id" method="post" style="display:inline">
                                     <input type="hidden" asp-for="@item.Id" name="userId" />
                                     <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                 </form>

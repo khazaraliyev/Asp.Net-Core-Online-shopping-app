@@ -17,6 +17,7 @@ using ShopApp.DataAccess.Abstract;
 using ShopApp.DataAccess.Concrete.SQL;
 using ShopApp.WebUI.EmailService;
 using ShopApp.WebUI.Identity;
+using Stripe;
 
 namespace ShopApp.WebUI
 {
@@ -86,6 +87,7 @@ namespace ShopApp.WebUI
                     )
                 );
             services.AddControllersWithViews();
+            //StripeConfiguration.ApiKey = configuration.GetSection("Stripe")["SecretKey"];
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -95,7 +97,6 @@ namespace ShopApp.WebUI
             {
                 app.UseDeveloperExceptionPage();
             }
-
             app.UseAuthentication();
             app.UseRouting();
             app.UseAuthorization();

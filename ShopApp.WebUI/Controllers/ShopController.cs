@@ -21,10 +21,10 @@ namespace ShopApp.WebUI.Controllers
         }
         public IActionResult List(string category, int page = 1)
         {
-            const int pageSize = 3;
+            const int pageSize = 6;
             return View(new ProductListViewModel()
             {
-                Products = productService.GetProductsByCategory(category, page, pageSize),
+                Products = productService.GetProductsByCategory(category, page, pageSize).Where(p=>p.IsApproved).ToList(),
                 PageInfo = new PageInfo()
                 {
                     CurrentPage = page,

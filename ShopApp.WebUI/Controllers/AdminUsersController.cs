@@ -11,7 +11,7 @@ using ShopApp.WebUI.ViewModels;
 
 namespace ShopApp.WebUI.Controllers
 {
-    [Authorize(Roles ="admin")]
+    [Authorize(Roles = "admin")]
     public class AdminUsersController : Controller
     {
         private readonly UserManager<ApplicationUser> userManager;
@@ -50,7 +50,7 @@ namespace ShopApp.WebUI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditUser(UserDetailsViewModel model, string[] selecedRoles)
+        public async Task<IActionResult> EditUser(UserDetailsViewModel model, string[] selectedRoles)
         {
             if (ModelState.IsValid)
             {
@@ -58,14 +58,29 @@ namespace ShopApp.WebUI.Controllers
                 if (user != null)
                 {
                     var userRoles = await userManager.GetRolesAsync(user);
-                    selecedRoles = selecedRoles ?? new string[] { };
-                    await userManager.AddToRolesAsync(user, selecedRoles.Except(userRoles).ToArray<string>());
-                    await userManager.RemoveFromRolesAsync(user, userRoles.Except(selecedRoles).ToArray<string>());
+                    selectedRoles = selectedRoles ?? new string[] { };
+                    await userManager.AddToRolesAsync(user, selectedRoles.Except(userRoles).ToArray<string>());
+                    await userManager.RemoveFromRolesAsync(user, userRoles.Except(selectedRoles).ToArray<string>());
                     return RedirectToAction("ListUsers");
                 }
                 return RedirectToAction("ListUsers");
             }
             return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteUser(string userId)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                var result = await userManager.DeleteAsync(user);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("ListUsers");
+                }
+            }
+            return View();
         }
     }
 }

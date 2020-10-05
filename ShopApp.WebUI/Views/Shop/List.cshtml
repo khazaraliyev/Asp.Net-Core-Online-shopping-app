@@ -1,6 +1,5 @@
 ﻿@model ProductListViewModel
 
-
 <div class="row">
     <div class="col-md-3">
         @await Component.InvokeAsync("Categories")
@@ -23,7 +22,7 @@
                         @if (string.IsNullOrEmpty(Model.PageInfo.CurrentCategory))
                         {
                             <li class="page-item @(Model.PageInfo.CurrentPage==i+1?"active":"")">
-                                <a class="page-link" href="/products?page=@(i+1)">
+                                <a class="page-link" asp-route-category="@Model.PageInfo.CurrentCategory" asp-route-page="@(i+1)" asp-controller="Shop" asp-action="List">
                                     @(i+1)
                                 </a>
                             </li>
@@ -32,7 +31,8 @@
                         else
                         {
                             <li class="page-item @(Model.PageInfo.CurrentPage==i+1?"active":"")">
-                                <a class="page-link" href="/products/@Model.PageInfo.CurrentCategory?page@(i+1)">
+                                <a class="page-link" asp-route-category="@Model.PageInfo.CurrentCategory" asp-route-page="@(i+1)" asp-controller="Shop" asp-action="List">
+                                    @(i+1)
                                 </a>
                             </li>
                         }
@@ -44,5 +44,3 @@
         </div>
     </div>
 </div>
-
-

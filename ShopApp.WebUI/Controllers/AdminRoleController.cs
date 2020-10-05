@@ -35,9 +35,9 @@ namespace ShopApp.WebUI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> EditRole(string roleid)
+        public async Task<IActionResult> EditRole(string id)
         {
-            var role = await roleManager.FindByIdAsync(roleid);
+            var role = await roleManager.FindByIdAsync(id);
             var members = new List<ApplicationUser>();
             var nonmembers = new List<ApplicationUser>();
 
@@ -54,7 +54,7 @@ namespace ShopApp.WebUI.Controllers
                 NonMembers = nonmembers
             };
 
-            return View();
+            return View(model);
         }
 
         [HttpPost]
@@ -116,6 +116,18 @@ namespace ShopApp.WebUI.Controllers
                         ModelState.AddModelError("", error.Description);
                     }
                 }
+            }
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteRole(string id)
+        {
+            var role = await roleManager.FindByIdAsync(id);
+            var result = await roleManager.DeleteAsync(role);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("ListRole");
             }
             return View();
         }

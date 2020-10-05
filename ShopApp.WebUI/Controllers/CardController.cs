@@ -33,7 +33,7 @@ namespace ShopApp.WebUI.Controllers
         public IActionResult Index()
         {
             var card = cardService.GetCardByUserId(userManager.GetUserId(User));
-            if (card==null)
+            if (card == null)
             {
                 return NotFound();
             }
@@ -117,6 +117,10 @@ namespace ShopApp.WebUI.Controllers
                     return View("Success");
 
                 }
+                else
+                {
+                    TempData["message"] = payment.ErrorMessage;
+                }
             }
 
             return View(model);
@@ -163,10 +167,12 @@ namespace ShopApp.WebUI.Controllers
 
         public Payment PaymentProcess(OrderViewModel model)
         {
+
             Options options = new Options();
             options.ApiKey = "sandbox-lqG2J1PXtO7WRuLw8Mex8AVhZIBSE2GD";
             options.SecretKey = "sandbox-22dyNh0SS8XllPk2pWE6j9WPxOcDAB0u";
             options.BaseUrl = "https://sandbox-api.iyzipay.com";
+
 
             CreatePaymentRequest request = new CreatePaymentRequest();
             request.Locale = Locale.EN.ToString();
@@ -179,7 +185,9 @@ namespace ShopApp.WebUI.Controllers
             request.PaymentChannel = PaymentChannel.WEB.ToString();
             request.PaymentGroup = PaymentGroup.PRODUCT.ToString();
 
+
             PaymentCard paymentCard = new PaymentCard();
+
             paymentCard.CardHolderName = model.CardName;
             paymentCard.CardNumber = model.CardNumber;
             paymentCard.ExpireMonth = model.ExpirationMonth;
@@ -187,6 +195,7 @@ namespace ShopApp.WebUI.Controllers
             paymentCard.Cvc = model.Cvv;
             paymentCard.RegisterCard = 0;
             request.PaymentCard = paymentCard;
+            
 
             //paymentCard.CardNumber = "5528790000000008";
             //paymentCard.ExpireMonth = "12";
@@ -208,6 +217,7 @@ namespace ShopApp.WebUI.Controllers
             buyer.Country = "Azerbaijan";
             buyer.ZipCode = "34732";
             request.Buyer = buyer;
+         
 
             Address shippingAddress = new Address();
             shippingAddress.ContactName = "Jane Doe";
@@ -216,6 +226,7 @@ namespace ShopApp.WebUI.Controllers
             shippingAddress.Description = "28 may, Bulbul pr. N:1";
             shippingAddress.ZipCode = "1005";
             request.ShippingAddress = shippingAddress;
+            
 
             Address billingAddress = new Address();
             billingAddress.ContactName = "Jane Doe";
