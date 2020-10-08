@@ -6,9 +6,10 @@
 <div class="row">
     <div class="col-md-12">
         <form asp-controller="AdminRole" asp-action="EditRole">
+            
             <input type="hidden" name="roleId" value="@Model.Role.Id" />
             <input type="hidden" name="roleName" value="@Model.Role.Name" />
-
+            <span asp-validation-for="@Model.Role.Name"></span>
             <h6 class="bg-info text-white p-1">Add to @Model.Role.Name</h6>
             <table class="table table-bordered table-sm">
                 @if (Model.NonMembers.Count() == 0)

@@ -10,7 +10,7 @@ namespace ShopApp.WebUI.ViewModels
 {
     public class RoleViewModel
     {
-        [Required]
+        [Required(ErrorMessage ="Enter role name")]
         public string Name { get; set; }
     }
 

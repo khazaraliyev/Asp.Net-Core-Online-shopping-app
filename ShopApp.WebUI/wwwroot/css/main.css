@@ -7,3 +7,13 @@
     object-fit: contain;
 }
 
+
+.field-validation-error {
+    color: #b3330c;
+    list-style-type: none;
+}
+
+.validation-summary-errors {
+    color: #b3330c;
+    list-style-type:none;
+}

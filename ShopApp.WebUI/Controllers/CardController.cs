@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Iyzipay;
-using Iyzipay.Model;
-using Iyzipay.Request;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +9,7 @@ using ShopApp.Business.Abstract;
 using ShopApp.Entity;
 using ShopApp.WebUI.Identity;
 using ShopApp.WebUI.ViewModels;
+using Stripe;
 using static ShopApp.Entity.Order;
 
 namespace ShopApp.WebUI.Controllers
@@ -45,7 +42,7 @@ namespace ShopApp.WebUI.Controllers
                     CradItemId = i.Id,
                     ProductId = i.ProductId,
                     Name = i.Product.Name,
-                    Price = (double)i.Product.Price,
+                    Price = (decimal)i.Product.Price,
                     Image = i.Product.ImageUrl,
                     Quantity = i.Quantity
                 }).ToList()
@@ -80,7 +77,7 @@ namespace ShopApp.WebUI.Controllers
                     CradItemId = i.Id,
                     ProductId = i.ProductId,
                     Name = i.Product.Name,
-                    Price = (double)i.Product.Price,
+                    Price = (decimal)i.Product.Price,
                     Image = i.Product.ImageUrl,
                     Quantity = i.Quantity
                 }).ToList()
@@ -89,7 +86,7 @@ namespace ShopApp.WebUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Checkout(OrderViewModel model)
+        public IActionResult Checkout(OrderViewModel model, string stripeEmail, string stripeToken)
         {
             if (ModelState.IsValid)
             {
@@ -103,23 +100,22 @@ namespace ShopApp.WebUI.Controllers
                         CradItemId = i.Id,
                         ProductId = i.ProductId,
                         Name = i.Product.Name,
-                        Price = (double)i.Product.Price,
+                        Price = (decimal)i.Product.Price,
                         Image = i.Product.ImageUrl,
                         Quantity = i.Quantity
                     }).ToList()
                 };
-                var payment = PaymentProcess(model);
-                if (payment.Status == "success")
+                var payment = PaymentProcess(model, stripeEmail, stripeToken);
+                if (payment.Status == "succeeded")
                 {
-                    SaveOrder(model, payment, userId);
+                    SaveOrder(model, userId);
                     ClearCard(model.CardModel.CardId);
-                    Console.WriteLine(payment.ErrorMessage);
                     return View("Success");
 
                 }
                 else
                 {
-                    TempData["message"] = payment.ErrorMessage;
+                    TempData["message"] = payment.FailureMessage;
                 }
             }
 
@@ -132,14 +128,14 @@ namespace ShopApp.WebUI.Controllers
             cardService.ClearCard(cardId);
         }
 
-        private void SaveOrder(OrderViewModel model, Payment payment, string userId)
+        private void SaveOrder(OrderViewModel model, string userId)
         {
-            var order = new Order();
+            var order = new Entity.Order();
             order.OrderNumber = new Random().Next(111111, 999999).ToString();
             order.OrderState = ProductOrderState.completed;
             order.PaymentType = ProductPaymentTypes.CreditCard;
-            order.PaymentId = payment.PaymentId;
-            order.ConversationId = payment.ConversationId;
+            //order.PaymentId = payment.PaymentId;
+            //order.ConversationId = payment.ConversationId;
             order.OrderDate = new DateTime();
             order.FirstName = model.Firstname;
             order.LastName = model.Lastname;
@@ -154,103 +150,38 @@ namespace ShopApp.WebUI.Controllers
             {
                 var orderItem = new ShopApp.Entity.OrderItem()
                 {
-                    Price = item.Price,
+                    Price = (double)item.Price,
                     Quantity = item.Quantity,
                     ProductId = item.ProductId
                 };
-                order.OrderItems = new List<Entity.OrderItem>();
                 order.OrderItems.Add(orderItem);
             }
             orderService.Create(order);
 
         }
 
-        public Payment PaymentProcess(OrderViewModel model)
+        public Charge PaymentProcess(OrderViewModel model, string stripeEmail, string stripeToken)
         {
+            var customers = new CustomerService();
+            var charges = new ChargeService();
 
-            Options options = new Options();
-            options.ApiKey = "sandbox-lqG2J1PXtO7WRuLw8Mex8AVhZIBSE2GD";
-            options.SecretKey = "sandbox-22dyNh0SS8XllPk2pWE6j9WPxOcDAB0u";
-            options.BaseUrl = "https://sandbox-api.iyzipay.com";
-
-
-            CreatePaymentRequest request = new CreatePaymentRequest();
-            request.Locale = Locale.EN.ToString();
-            request.ConversationId = new Random().Next(111111111, 999999999).ToString();
-            request.Price = model.CardModel.TotalPrice().ToString();
-            request.PaidPrice = model.CardModel.TotalPrice().ToString();
-            request.Currency = Currency.USD.ToString();
-            request.Installment = 1;
-            request.BasketId = "B67832";
-            request.PaymentChannel = PaymentChannel.WEB.ToString();
-            request.PaymentGroup = PaymentGroup.PRODUCT.ToString();
-
-
-            PaymentCard paymentCard = new PaymentCard();
-
-            paymentCard.CardHolderName = model.CardName;
-            paymentCard.CardNumber = model.CardNumber;
-            paymentCard.ExpireMonth = model.ExpirationMonth;
-            paymentCard.ExpireYear = model.ExpirationYear;
-            paymentCard.Cvc = model.Cvv;
-            paymentCard.RegisterCard = 0;
-            request.PaymentCard = paymentCard;
-            
-
-            //paymentCard.CardNumber = "5528790000000008";
-            //paymentCard.ExpireMonth = "12";
-            //paymentCard.ExpireYear = "2030";
-            //paymentCard.Cvc = "123";
-
-            Buyer buyer = new Buyer();
-            buyer.Id = "BY789";
-            buyer.Name = model.Firstname;
-            buyer.Surname = model.Lastname;
-            buyer.GsmNumber = "+905350000000";
-            buyer.Email = "email@email.com";
-            buyer.IdentityNumber = "74300864791";
-            buyer.LastLoginDate = "2015-10-05 12:43:35";
-            buyer.RegistrationDate = "2013-04-21 15:12:09";
-            buyer.RegistrationAddress = "28 may, Bulbul pr. N:1";
-            buyer.Ip = "85.34.78.112";
-            buyer.City = "Baku";
-            buyer.Country = "Azerbaijan";
-            buyer.ZipCode = "34732";
-            request.Buyer = buyer;
-         
-
-            Address shippingAddress = new Address();
-            shippingAddress.ContactName = "Jane Doe";
-            shippingAddress.City = "Baku";
-            shippingAddress.Country = "Azerbaijan";
-            shippingAddress.Description = "28 may, Bulbul pr. N:1";
-            shippingAddress.ZipCode = "1005";
-            request.ShippingAddress = shippingAddress;
-            
-
-            Address billingAddress = new Address();
-            billingAddress.ContactName = "Jane Doe";
-            billingAddress.City = "Baku";
-            billingAddress.Country = "Azerbaijan";
-            billingAddress.Description = "28 may, Bulbul pr. N:1";
-            billingAddress.ZipCode = "1005";
-            request.BillingAddress = billingAddress;
-
-            List<BasketItem> basketItems = new List<BasketItem>();
-
-            BasketItem basketItem;
-            foreach (var item in model.CardModel.CardItems)
+            var customer = customers.Create(new CustomerCreateOptions
             {
-                basketItem = new BasketItem();
-                basketItem.Id = item.ProductId.ToString();
-                basketItem.Name = item.Name;
-                basketItem.Category1 = "Phone";
-                basketItem.Price = item.Price.ToString();
-                basketItem.ItemType = BasketItemType.PHYSICAL.ToString();
-                basketItems.Add(basketItem);
-            }
-            request.BasketItems = basketItems;
-            return Payment.Create(request, options);
+                Email = stripeEmail,
+                Source = stripeToken
+            });
+
+            var charge = new ChargeCreateOptions
+            {
+                Amount = (long)model.CardModel.TotalPrice(),
+                Description = "default description",
+                Currency = "USD",
+                Customer = customer.Id,
+                ReceiptEmail = stripeEmail
+            };
+            Charge createcharge = charges.Create(charge);
+            return createcharge;
+
         }
     }
 }

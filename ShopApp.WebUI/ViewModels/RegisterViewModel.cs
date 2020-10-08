@@ -8,21 +8,21 @@ namespace ShopApp.WebUI.ViewModels
 {
     public class RegisterViewModel
     {
-        [Required]
+        [Required(ErrorMessage ="Firstname is required")]
         public string FirstName { get; set; }
-        [Required]
+        [Required(ErrorMessage ="Lastname is required")]
         public string LastName { get; set; }
-        [Required]
+        [Required(ErrorMessage ="Username is required")]
         public string UserName { get; set; }
-        [Required]
+        [Required(ErrorMessage ="Password is required")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
-        [Required]
+        [Required(ErrorMessage ="Enter password again")]
         [DataType(DataType.Password)]
-        [Compare("Password")]
+        [Compare("Password",ErrorMessage ="Password does not match")]
         public string ReenterPassword { get; set; }
-        [Required]
-        [DataType(DataType.EmailAddress)]
+        [Required(ErrorMessage ="Email is requried")]
+        [DataType(DataType.EmailAddress,ErrorMessage ="Enter correct email format")]
         public string Email { get; set; }
 
     }

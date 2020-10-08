@@ -12,6 +12,7 @@ namespace ShopApp.WebUI.ViewModels
         public string Address { get; set; }
         public string City { get; set; }
         public string Email { get; set; }
+        public DateTime OrderDate { get; set; }
         public string Phone { get; set; }
         public string Note { get; set; }
         public string CardName { get; set; }
@@ -19,6 +20,7 @@ namespace ShopApp.WebUI.ViewModels
         public string ExpirationMonth { get; set; }
         public string ExpirationYear { get; set; }
         public string Cvv { get; set; }
+        public string stripeToken { get; set; }
         public CardViewModel CardModel{ get; set; }
     }
 }

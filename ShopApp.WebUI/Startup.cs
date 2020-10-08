@@ -87,7 +87,7 @@ namespace ShopApp.WebUI
                     )
                 );
             services.AddControllersWithViews();
-            //StripeConfiguration.ApiKey = configuration.GetSection("Stripe")["SecretKey"];
+            StripeConfiguration.ApiKey = configuration.GetSection("Stripe")["SecretKey"];
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -8,12 +8,12 @@ namespace ShopApp.WebUI.ViewModels
 {
     public class ResetPasswordViewModel
     {
-        [Required]
+        [Required(ErrorMessage ="Token could be found")]
         public string Token { get; set; }
-        [Required]
-        [DataType(DataType.EmailAddress)]
+        [Required(ErrorMessage ="Enter email")]
+        [DataType(DataType.EmailAddress,ErrorMessage ="Enter correct email format")]
         public string Email { get; set; }
-        [Required]
+        [Required(ErrorMessage ="Enter password")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
     }

@@ -10,7 +10,7 @@ namespace ShopApp.WebUI.ViewModels
         public int CardId { get; set; }
         public List<CardItemViewModel> CardItems { get; set; }
 
-        public double TotalPrice()
+        public decimal TotalPrice()
         {
             return CardItems.Sum(i => i.Price * i.Quantity);
         }
@@ -21,7 +21,7 @@ namespace ShopApp.WebUI.ViewModels
         public int CradItemId { get; set; }
         public int ProductId { get; set; }
         public string Name { get; set; }
-        public double Price { get; set; }
+        public decimal Price { get; set; }
         public string Image { get; set; }
         public int Quantity { get; set; }
     }
